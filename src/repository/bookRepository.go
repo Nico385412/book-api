@@ -64,7 +64,7 @@ func InsertBookInfo(book *models.Book) interface{} {
 	return insertResult.InsertedID
 }
 
-func InsertBook(fileName string) string {
+func InsertBook(fileName string) int {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		log.Fatal(err)
@@ -88,7 +88,7 @@ func InsertBook(fileName string) string {
 		os.Exit(1)
 	}
 
-	return
+	return fileSize
 }
 
 func DeleteOneBook(fileName string) {

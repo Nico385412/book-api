@@ -1,6 +1,6 @@
 module github.com/nico385412/book-api
 
-replace github.com/nico385412/book-api => /mnt/c/Users/NicolasHansse/Documents/Go/book-api
+replace github.com/nico385412/book-api => /Users/nicolashansse/Documents/Projects/Learn/book-api
 
 go 1.13
 
