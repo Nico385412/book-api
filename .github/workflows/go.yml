@@ -18,3 +18,4 @@ jobs:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASS }}
         registry: ${{ secrets.DOCKER_REGISTRY_URL }}
+        repository: nico385412/book-api
