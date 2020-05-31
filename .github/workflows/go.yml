@@ -3,25 +3,18 @@ name: Go
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
     steps:
-
-    - name: curl
-      uses: wei/curl@master
-      with:
-        args: https://tts.niha.fr
         
     - uses: actions/checkout@master
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+    
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v1.1.0
       with:
-        name: nico385412/book-api
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASS }}
         registry: ${{ secrets.DOCKER_REGISTRY_URL }}
