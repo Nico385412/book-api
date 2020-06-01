@@ -1,4 +1,4 @@
-name: Go
+name: master
 
 on:
   push:
@@ -21,3 +21,15 @@ jobs:
         registry: ${{ secrets.DOCKER_REGISTRY_URL }}
         repository: nico385412/book-api
         tags: latest
+
+  deploy: 
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Run SSH command
+      uses: garygrossgarten/github-action-ssh@v0.5.0
+      with:
+        command: ./deploy/book-api.sh
+        host: ${{ secrets.VPS_URL }}
+        username: ${{ secrets.VPS_USER }}
+        privateKey: ${{ secrets.VPS_PRIVATE_KEY }}
