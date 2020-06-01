@@ -9,7 +9,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        
+    
+    - name: Checkout master
     - uses: actions/checkout@master
     
     - name: Build and push Docker images
@@ -18,5 +19,5 @@ jobs:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASS }}
         registry: ${{ secrets.DOCKER_REGISTRY_URL }}
-        repository: nico385412/bookapi
-        tag_with_ref: true
+        repository: nico385412/book-api
+        tags: latest
