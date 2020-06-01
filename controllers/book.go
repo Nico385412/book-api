@@ -2,28 +2,44 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nico385412/book-api/converter"
-	"github.com/nico385412/book-api/repository"
+	bookRepository "github.com/nico385412/book-api/repository/book"
+	coverRepository "github.com/nico385412/book-api/repository/cover"
+	"github.com/nico385412/book-api/service"
 	uuid "github.com/satori/go.uuid"
 )
 
 func GetBooks(c *gin.Context) {
-	books := repository.GetAllBooks()
+	books := bookRepository.GetAllBooks()
 	c.JSON(http.StatusOK, books)
 }
 
 func GetBook(c *gin.Context) {
 	fileUUID := c.Param("id")
-	data := repository.DownloadOneBook(fileUUID)
+	data := bookRepository.GetBookInfos(fileUUID)
+	c.JSON(http.StatusOK, data)
+}
+
+func GetData(c *gin.Context) {
+	fileUUID := c.Param("id")
+	data := coverRepository.DownloadOneImage(fileUUID)
 	c.Data(http.StatusOK, "application/epub+zip", data.Bytes())
+}
+
+func GetImage(c *gin.Context) {
+	fileUUID := c.Param("id")
+	book := bookRepository.GetBookInfos(fileUUID)
+	data := coverRepository.DownloadOneImage(book.CoverID)
+	c.Data(http.StatusOK, "", data.Bytes())
 }
 
 func DeleteBook(c *gin.Context) {
 	bookUUID := c.Param("id")
-	repository.DeleteOneBook(bookUUID)
+	bookRepository.DeleteOneBook(bookUUID)
 }
 
 func PostBook(c *gin.Context) {
@@ -39,12 +55,24 @@ func PostBook(c *gin.Context) {
 		return
 	}
 
-	repository.InsertBook(fileName)
+	//Insert Ebook File
+	bookRepository.InsertBook(fileName)
 
-	book := converter.ConvertFileToBookModel(&fileName)
-	repository.InsertBookInfo(book)
+	bookImage, err2 := service.GetCover(&fileName)
+	var coverId string
+
+	if err2 != nil {
+		log.Printf("There is no image for this cover")
+	} else {
+		coverId = coverRepository.InsertImage(bookImage)
+	}
+
+	book := service.ConvertFileToBookModel(&fileName, &coverId)
+	bookRepository.InsertBookInfo(book)
 
 	c.JSON(http.StatusOK, gin.H{
 		"inserted": fileName,
 	})
+
+	defer os.Remove(fileName)
 }

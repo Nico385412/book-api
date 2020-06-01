@@ -12,7 +12,7 @@ require (
 	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
-	github.com/nico385412/goreader v0.0.4
+	github.com/nico385412/goreader v0.0.6
 	github.com/nsf/termbox-go v0.0.0-20200418040025-38ba6e5628f1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/satori/go.uuid v1.2.0

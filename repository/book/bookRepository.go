@@ -1,4 +1,4 @@
-package repository
+package bookRepository
 
 import (
 	"bytes"
@@ -56,6 +56,18 @@ func GetAllBooks() []*models.Book {
 	return books
 }
 
+func GetBookInfos(id string) models.Book {
+	var book models.Book
+
+	err := config.DB.Database("book").Collection("book-info").FindOne(context.TODO(), bson.M{"_id": id}).Decode(&book)
+
+	if err != nil {
+		log.Fatal("Error on Finding document", err)
+	}
+
+	return book
+}
+
 func InsertBookInfo(book *models.Book) interface{} {
 	insertResult, err := config.DB.Database("book").Collection("book-info").InsertOne(context.TODO(), book)
 	if err != nil {
@@ -72,9 +84,7 @@ func InsertBook(fileName string) int {
 	bucket, err := gridfs.NewBucket(
 		config.DB.Database("book"),
 	)
-	uploadStream, err := bucket.OpenUploadStream(
-		fileName,
-	)
+	uploadStream, err := bucket.OpenUploadStreamWithID(fileName, fileName)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
@@ -83,6 +93,7 @@ func InsertBook(fileName string) int {
 	defer uploadStream.Close()
 
 	fileSize, err := uploadStream.Write(file)
+
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
@@ -92,7 +103,7 @@ func InsertBook(fileName string) int {
 }
 
 func DeleteOneBook(fileName string) {
-	config.DB.Database("book").Collection("book-info").FindOneAndDelete(context.TODO(), bson.M{"binaryid": fileName})
+	config.DB.Database("book").Collection("book-info").DeleteOne(context.TODO(), bson.M{"_id": fileName})
 
 	bucket, err := gridfs.NewBucket(
 		config.DB.Database("book"),
@@ -102,14 +113,5 @@ func DeleteOneBook(fileName string) {
 		log.Fatal(err)
 	}
 
-	bucket.Delete(bson.M{
-		"filename": fileName,
-	})
-
-	// if element.err != nil {
-
-	// 	config.DB.Database("book").Collection("fs.chunks").FindOneAndDelete(context.TODO(), bson.M{"files_id": element.cur.})
-	// }
-
-	// TODO SUCCEED TO DELETE
+	bucket.Delete(fileName)
 }
