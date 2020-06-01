@@ -25,7 +25,7 @@ jobs:
     - name: Rolling update server 
       uses: garygrossgarten/github-action-ssh@v0.5.0
       with:
-        command: ./deploy/book-api.sh
+        command: /deploy/book-api.sh
         host: ${{ secrets.VPS_URL }}
         username: ${{ secrets.VPS_USER }}
         privateKey: ${{ secrets.VPS_PRIVATE_KEY }}
