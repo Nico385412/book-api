@@ -1,24 +1,21 @@
-FROM golang:latest
+FROM golang:alpine AS build-env
 
-LABEL maintainer="Nicolas Hansse <nico.hansse@gmail.com>"
+ENV MONGODB_URL localhost:27017
 
-# Set the Current Working Directory inside the container
-WORKDIR /app
+RUN mkdir /hello
+WORKDIR /hello
+COPY go.mod .
+COPY go.sum .
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+RUN apk add --update --no-cache ca-certificates git
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+# Get dependancies - will also be cached if we won't change mod/sum
 RUN go mod download
-
-# Copy the source from the current directory to the Working Directory inside the container
+# COPY the source code as the last step
 COPY . .
 
-# Build the Go app
-RUN go build -o main .
-
-# Expose port 8080 to the outside world
-EXPOSE 8000
-
-# Command to run the executable
-CMD ["./main"]
+# Build the binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/hello
+FROM scratch 
+COPY --from=build-env /go/bin/hello /go/bin/hello
+ENTRYPOINT ["/go/bin/hello"]

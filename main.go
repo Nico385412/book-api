@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/nico385412/book-api/config"
 	"github.com/nico385412/book-api/routes"
@@ -33,7 +34,13 @@ func main() {
 }
 
 func getClient() *mongo.Client {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	url := os.Getenv("MONGODB_URL")
+
+	if len(url) == 0 {
+		url = "localhost:27017"
+	}
+
+	clientOptions := options.Client().ApplyURI("mongodb://" + url)
 	client, err := mongo.NewClient(clientOptions)
 	if err != nil {
 		log.Fatal(err)
