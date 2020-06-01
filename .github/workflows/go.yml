@@ -22,11 +22,7 @@ jobs:
         repository: nico385412/book-api
         tags: latest
 
-  deploy: 
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Run SSH command
+    - name: Rolling update server 
       uses: garygrossgarten/github-action-ssh@v0.5.0
       with:
         command: ./deploy/book-api.sh
